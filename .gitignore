@@ -20,4 +20,4 @@ local.properties
 .project
 
 # Eclipse project properties
-.properties
+project.properties
