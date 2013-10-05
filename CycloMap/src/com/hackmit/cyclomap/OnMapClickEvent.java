@@ -12,12 +12,13 @@ public class OnMapClickEvent implements OnMapClickListener {
 	private GoogleMap mMap;
 	
 	public OnMapClickEvent(GoogleMap map) {
-		mMap = map;
+		this.mMap = map;
 	}
 
 	@Override
 	public void onMapClick(LatLng point) {
 		Log.d("Tag: ", "click on " + point.toString());
         mMap.addMarker(new MarkerOptions().position(point));
+        Polyline.addMarker(point);
 	}
 }
