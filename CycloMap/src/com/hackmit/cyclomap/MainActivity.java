@@ -18,6 +18,7 @@ public class MainActivity extends Activity {
         mMapFragment = (MapFragment)getFragmentManager().findFragmentById(R.id.map);
         mMap = mMapFragment.getMap();
         mMap.setMyLocationEnabled(true);
-        mMap.setOnMapClickListener(new OnClickEvent(this));
+        mMap.setOnMapClickListener(new OnMapClickEvent(mMap));
+        mMap.setOnMarkerClickListener(new OnMarkerClickEvent());
     }
 }
