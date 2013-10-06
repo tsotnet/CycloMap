@@ -1,9 +1,9 @@
 package com.hackmit.cyclomap;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.IntentSender;
 import android.location.Location;
-import android.location.LocationListener;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -11,6 +11,7 @@ import android.test.suitebuilder.TestMethod;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -43,6 +44,7 @@ public class MainActivity extends Activity implements
     private Marker mSelectedMarker = null;
     private LocationClient mLocationClient;
     private LocationRequest mLocationRequest;
+    private ProgressDialog mProgressDialog;
     // Navigation data update frequency
     public static final int UPDATE_INTERVAL_IN_MILLISECONDS = 5;
     // Fastest navigation data update frequency that our app can handle
@@ -105,6 +107,13 @@ public class MainActivity extends Activity implements
         mMap.getUiSettings().setZoomControlsEnabled(false);
         mMap.setOnMapClickListener(new MyMapClickListener());
         mMap.setOnMarkerClickListener(new MyMarkerClickListener());
+        
+        for (LatLng point : MarkerPositionList.getMarkers()) {
+            createMarker(point, "Red");
+        }
+        MarkerPositionList.draw(mMap);
+        mProgressDialog = createNewProgressDialog();
+        mProgressDialog.show();
     }
     
     @Override
@@ -161,9 +170,13 @@ public class MainActivity extends Activity implements
                             createMarker(point, "Red");
                             MarkerPositionList.draw(mMap);
                 		}
+                		if (mProgressDialog != null) {
+                		    mProgressDialog.cancel();
+                		}
                 	};
                 };
                 MarkerPositionList.addMarker(point, isMarkerAdded);
+                mProgressDialog.show();
             }
             mSelectedMarker = null;
         }
@@ -191,7 +204,9 @@ public class MainActivity extends Activity implements
                 	Handler markerRemoved = new Handler() {
                 		@Override
                 		public void handleMessage(Message msg) {
-                			super.handleMessage(msg);
+                            if (mProgressDialog != null) {
+                                mProgressDialog.cancel();
+                            }
                 			if (msg.what == 1) { // unsuccessful delete
                 				Log.d("remove marker", "UNsuccessfull remove");
                 				return ;
@@ -203,6 +218,7 @@ public class MainActivity extends Activity implements
                             MarkerPositionList.draw(mMap);
                 		}
                 	};
+                    mProgressDialog.show();
                 	MarkerPositionList.removeMarker(new_marker.getPosition(), markerRemoved);
                 }
             });
@@ -213,6 +229,7 @@ public class MainActivity extends Activity implements
     
     @Override
     public void onConnected(Bundle connectionHint) {
+        mProgressDialog.hide();
         Location location = mLocationClient.getLastLocation();
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(),location.getLongitude()),17.0f));
         mLocationClient.requestLocationUpdates(mLocationRequest, this);
@@ -234,11 +251,32 @@ public class MainActivity extends Activity implements
         }
     }
     
-    @Override
-    public void onDisconnected() {
-        // Hayk jan, what should I do here? :D
-        // I hate that I have to implement interface's every method :@
+    private ProgressDialog createNewProgressDialog() {
+        ProgressDialog result = new ProgressDialog(MainActivity.this);
+        result.setCancelable(false);
+        result.setMessage(getString(R.string.progress_dialog_text));
+        return result;
     }
+    
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mProgressDialog == null) {
+            mProgressDialog = createNewProgressDialog();
+        }
+    }
+    
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mProgressDialog != null) {
+            mProgressDialog.cancel();
+            mProgressDialog = null;
+        }
+    }
+    
+    @Override
+    public void onDisconnected() { }
     
     @Override
     public void onLocationChanged(Location location) {
