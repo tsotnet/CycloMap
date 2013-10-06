@@ -69,46 +69,59 @@ public class MainActivity extends Activity {
         mMap = mMapFragment.getMap();
         mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setZoomControlsEnabled(false);
-        mMap.setOnMapClickListener(new OnMapClickListener() {
-            @Override
-            public void onMapClick(LatLng point) {
-                if (mSelectedMarker != null) {
-                    reCreateMarker(mSelectedMarker, "Red");
+        mMap.setOnMapClickListener(new MyMapClickListener());
+        mMap.setOnMarkerClickListener(new MyMarkerClickListener());
+    }
+    
+    
+    /**
+     * This class catches onclick event on the map and creates new marker
+     * if no marker is selected, otherwise it deselects previous select
+     */
+    private class MyMapClickListener implements OnMapClickListener {
+        @Override
+        public void onMapClick(LatLng point) {
+            if (mSelectedMarker != null) {
+                reCreateMarker(mSelectedMarker, "Red");
+                mLowerLayout.setVisibility(View.INVISIBLE);
+            } else {
+                // Adding marker in map
+                createMarker(point, "Red");
+                Polyline.addMarker(point);
+            }
+            mSelectedMarker = null;
+        }
+    }
+    
+    
+    /**
+     * This class catches onclick events for marker. It is responsible
+     * for showing and hiding lower button for removing marker
+     */
+    private class MyMarkerClickListener implements OnMarkerClickListener {
+        @Override
+        public boolean onMarkerClick(final Marker marker) {
+            final Marker new_marker;
+            if (marker != mSelectedMarker) {
+                reCreateMarker(mSelectedMarker, "Red");
+                new_marker = reCreateMarker(marker, "Blue");
+            } else {
+                new_marker = marker;
+            }
+            mLowerLayout.setVisibility(View.VISIBLE);
+            mRemoveButton.setOnClickListener(new OnClickListener() {
+                @Override
+                // Event for removing marker from map
+                public void onClick(View v) {
+                    Polyline.removeMarker(new_marker.getPosition());
+                    new_marker.remove();
+                    mSelectedMarker = null;
                     mLowerLayout.setVisibility(View.INVISIBLE);
-                } else {
-                    createMarker(point, "Red");
-//                    mMap.addMarker(new MarkerOptions()
-//                                       .position(point)
-//                                       .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
                 }
-                mSelectedMarker = null;
-            }
-        });
-        mMap.setOnMarkerClickListener(new OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(final Marker marker) {
-                final Marker new_marker;
-                if (marker != mSelectedMarker) {
-                    reCreateMarker(mSelectedMarker, "Red");
-                    new_marker = reCreateMarker(marker, "Blue");
-                } else {
-                    new_marker = marker;
-                }
-                mLowerLayout.setVisibility(View.VISIBLE);
-                mRemoveButton.setOnClickListener(new OnClickListener() {
-                    @Override
-                    // Event for removing marker from map
-                    // TODO(hayk): update list appropriately
-                    public void onClick(View v) {
-                        new_marker.remove();
-                        mSelectedMarker = null;
-                        mLowerLayout.setVisibility(View.INVISIBLE);
-                    }
-                });
-                mSelectedMarker = new_marker;
-                return true;
-            }
-        });
+            });
+            mSelectedMarker = new_marker;
+            return true;
+        }
     }
     
 }
