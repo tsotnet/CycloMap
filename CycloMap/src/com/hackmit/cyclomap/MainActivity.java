@@ -131,10 +131,11 @@ public class MainActivity extends Activity implements
                 		    LatLng point = (LatLng)msg.obj;
                             Log.d("create marker", "success");
                             createMarker(point, "Red");
+                            MarkerPositionList.draw(mMap);
                 		}
                 	};
                 };
-                Polyline.addMarker(point, isMarkerAdded);
+                MarkerPositionList.addMarker(point, isMarkerAdded);
             }
             mSelectedMarker = null;
         }
@@ -171,9 +172,10 @@ public class MainActivity extends Activity implements
                             Log.d("remove marker", "success");
                             mSelectedMarker = null;
                             mLowerLayout.setVisibility(View.INVISIBLE);	
+                            MarkerPositionList.draw(mMap);
                 		}
                 	};
-                	Polyline.removeMarker(new_marker.getPosition(), markerRemoved);
+                	MarkerPositionList.removeMarker(new_marker.getPosition(), markerRemoved);
                 }
             });
             mSelectedMarker = new_marker;

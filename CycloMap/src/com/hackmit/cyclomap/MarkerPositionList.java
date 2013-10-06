@@ -3,13 +3,17 @@ package com.hackmit.cyclomap;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
-public class Polyline {
+public class MarkerPositionList {
 	
 	final static double EPS = (1e-3);
 	
@@ -71,6 +75,18 @@ public class Polyline {
 		
 		Log.d("polyline", "point not found");
 		isRemovedSuccessfully.sendEmptyMessage(1 /* bad */);
+	}
+	
+	private static Polyline polyline = null;
+	public static void draw(GoogleMap mMaps) {
+		if (polyline != null) {
+			polyline.remove();
+		}
+		PolylineOptions polylineOptions = new PolylineOptions();
+		polylineOptions.addAll(points);
+		polylineOptions.width(5);
+		polylineOptions.color(Color.RED);
+		polyline = mMaps.addPolyline(polylineOptions);
 	}
 	
 	private static void removeMarker(final int index, final Handler isRemovedSuccessfully) {
