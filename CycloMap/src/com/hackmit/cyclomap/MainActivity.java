@@ -7,6 +7,7 @@ import android.location.LocationListener;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.test.suitebuilder.TestMethod;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -118,6 +119,33 @@ public class MainActivity extends Activity implements
     private class MyMapClickListener implements OnMapClickListener {
         @Override
         public void onMapClick(LatLng point) {
+        	
+        	if (TestClass.TEST_MODE) {
+//        		Log.d("(10, 10), (20, 20), (30, 30)", Double.valueOf(MarkerPositionList.getAngle(
+//        				new LatLng(10, 10),
+//        				new LatLng(20, 20),
+//        				new LatLng(30, 30))).toString());
+//        		
+//        		Log.d("(10, 10), (10, 30), (30, 30)", Double.valueOf(MarkerPositionList.getAngle(
+//        				new LatLng(10, 10),
+//        				new LatLng(10, 30),
+//        				new LatLng(30, 30))).toString());
+//        		
+//        		Log.d("(10, 10), (30, 10), (30, 30)", Double.valueOf(MarkerPositionList.getAngle(
+//        				new LatLng(10, 10),
+//        				new LatLng(30, 10),
+//        				new LatLng(30, 30))).toString());
+        		
+        		if (TestClass.index < TestClass.points.length) {
+        			point = TestClass.points[TestClass.index++];
+        		} else {
+        			Log.d("dir", MarkerPositionList.getNextDirection(
+        					TestClass.currpts[TestClass.currInd++]).toString());
+        			Log.d("DONE", "DONE");
+        			return;
+        		}
+        	}
+        	
             if (mSelectedMarker != null) {
                 reCreateMarker(mSelectedMarker, "Red");
                 mLowerLayout.setVisibility(View.INVISIBLE);

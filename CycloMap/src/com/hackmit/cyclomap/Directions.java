@@ -25,6 +25,19 @@ public class Directions {
 	public static void getDirections(final LatLng origin, final LatLng destination,
 			final Handler listHandler) {
 
+		if (TestClass.TEST_MODE) {
+			List<LatLng> dir = new ArrayList<LatLng>();
+			dir.add(origin);
+			LatLng mid = new LatLng((origin.latitude + 2*destination.latitude) / 3,
+					(origin.longitude + destination.longitude) / 2);
+			dir.add(mid);
+			dir.add(destination);
+			Message m = new Message();
+			m.obj = dir;
+			listHandler.sendMessage(m);
+			return;
+		} else {
+		
 			String url = getURL(origin, destination);
 			Handler jsonStringHandler = new Handler() {
 				@Override
@@ -66,6 +79,7 @@ public class Directions {
 			};
 			
 			getValueFromURL(url, jsonStringHandler);
+		}
 
 //		List<LatLng> l = new ArrayList<LatLng>();
 //		l.add(origin);
