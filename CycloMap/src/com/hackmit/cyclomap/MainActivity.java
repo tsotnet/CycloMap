@@ -1,5 +1,8 @@
 package com.hackmit.cyclomap;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.IntentSender;
@@ -7,10 +10,12 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Vibrator;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -44,10 +49,11 @@ public class MainActivity extends Activity implements
     private LocationClient mLocationClient;
     private LocationRequest mLocationRequest;
     private ProgressDialog mProgressDialog;
+    private volatile Location mCurrentLocation;
     // Navigation data update frequency
-    public static final int UPDATE_INTERVAL_IN_MILLISECONDS = 5;
+    public static final int UPDATE_INTERVAL_IN_MILLISECONDS = 100;
     // Fastest navigation data update frequency that our app can handle
-    public static final int FASTEST_INTERVAL_IN_MILLISECONDS = 1;
+    public static final int FASTEST_INTERVAL_IN_MILLISECONDS = 50;
     /**
      * @param point Marker coordinates
      * @param color Color of the marker (either "Red" or "Blue" otherwise throws IllegalArgumentException)
@@ -253,6 +259,124 @@ public class MainActivity extends Activity implements
     @Override
     public void onLocationChanged(Location location) {
         Log.d("TAG", ""+location.getLatitude()+" "+location.getLongitude()+" "+location.getSpeed());
+        mCurrentLocation = location;
     }
     
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+        case R.id.menu_start:
+            startNavigation();
+        default:
+            return super.onOptionsItemSelected(item);
+        }
+    }
+    
+    private Location LatLngToLocation(LatLng x) {
+        Location location = new Location("");
+        location.setLatitude(x.latitude);
+        location.setLongitude(x.longitude);
+        return location;
+    }
+    
+    private LatLng LocationToLatLng(Location x) {
+        return new LatLng(x.getLatitude(), x.getLongitude());
+    }
+    
+    long tm;
+    
+    void startNavigation() {
+        final Vibrator vibrator = (Vibrator)getSystemService(VIBRATOR_SERVICE);
+        final Handler handler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                if (tm > System.currentTimeMillis()) {
+                    return;
+                }
+                if (msg.what == 1) {
+                    tm = System.currentTimeMillis() + 1000;
+                    vibrator.vibrate(900);
+                } else if (msg.what == -1) {
+                    tm = System.currentTimeMillis() + 600;
+                    vibrator.vibrate(500);
+                }
+            }
+        };
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Location location;
+                List<Location> hist_location = new ArrayList<Location>();
+                List<LatLng> points = MarkerPositionList.getPoints();
+                int cur = 0; // current index in points of our location
+                while (true) {
+                    try {
+                        Thread.sleep(FASTEST_INTERVAL_IN_MILLISECONDS);
+                    } catch (InterruptedException e) {
+                        return;
+                    }
+                    location = mCurrentLocation;
+                    while(cur < points.size()) {
+                        float dist = location.distanceTo(LatLngToLocation(points.get(cur)));
+                        Log.d("TAG", "Distance: "+dist);
+                        if (dist < 20) {
+                            cur++;
+                        } else {
+                            break;
+                        }
+                    }
+                    if (cur == points.size()) {
+                        return; // Finished, yay!
+                    }
+                    double angle1 = getAngle(location, LatLngToLocation(points.get(cur)));
+                    double angle2 = Float.MAX_VALUE;
+                    
+                    for (int i = hist_location.size()-1; i>=0; i--) {
+                        if (location.distanceTo(hist_location.get(i)) > 10) {
+                            angle2 = getAngle(location, hist_location.get(i));
+                            break;
+                        }
+                    }
+                    if (angle1 != Float.MAX_VALUE && angle2 != Float.MAX_VALUE) {
+                        double angle = angle2-angle1;
+                        if (angle < -Math.PI) {
+                            angle += 2 * Math.PI;
+                        }
+                        if (angle > Math.PI) {
+                            angle -= 2 * Math.PI;
+                        }
+                        int what;
+                        if (Math.abs(angle) < Math.PI * 0.1) {
+                            what = 0;
+                        } else if (angle > 0) {
+                            what = 1;
+                        } else {
+                            what = -1;
+                        }
+                        handler.sendEmptyMessage(what);
+                    } else {
+                        handler.sendEmptyMessage(0);
+                    }
+                    hist_location.add(location);
+                }
+            }
+        }).start();
+    }
+    
+    private double getAngle(Location a,Location b) {
+        double dx = a.getLatitude() - b.getLatitude();
+        double dy = a.getLongitude() - b.getLongitude();
+        double res = Math.atan2(dy, dx);
+        if (Double.isNaN(res)) {
+            return Double.MAX_VALUE;
+        } else {
+            return res;
+        }
+    }
 }
