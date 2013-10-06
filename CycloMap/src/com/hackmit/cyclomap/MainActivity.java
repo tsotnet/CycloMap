@@ -148,8 +148,8 @@ public class MainActivity extends Activity implements
         		if (TestClass.index < TestClass.points.length) {
         			point = TestClass.points[TestClass.index++];
         		} else {
-        			Log.d("dir", MarkerPositionList.getNextDirection(
-        					TestClass.currpts[TestClass.currInd++]).toString());
+        			Log.d("dir", Integer.valueOf(MarkerPositionList.getNextDirection(
+        					TestClass.currpts[TestClass.currInd++])).toString());
         			Log.d("markers: ", MarkerPositionList.getMarkers().toString());
         			Log.d("DONE", "DONE");
         			return;

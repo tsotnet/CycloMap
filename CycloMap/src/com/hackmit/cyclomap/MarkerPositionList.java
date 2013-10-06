@@ -99,25 +99,31 @@ public class MarkerPositionList {
 		polyline = mMaps.addPolyline(polylineOptions);
 	}
 	
-	public enum DIRECTION {
-		LEFT, RIGHT, STRAIGHT, WRONG_WAY, DONE
-	};
+//	public enum DIRECTION {
+//		LEFT, RIGHT, STRAIGHT, WRONG_WAY, DONE
+//	};
+	
+	private static final int LEFT = -1;
+	private static final int RIGHT = 1;
+	private static final int STRAIGHT = 0;
+	private static final int WRONG_WAY = 2;
+	private static final int DONE = 3;
 	
 	private static final double THRESHOLD = 20.0;
 	private static final double ACC = 3.0;
 	private static Double prevDist = null;
 	private static LatLng prevPt = null;
-	public static DIRECTION getNextDirection(LatLng currentPoint) {
+	public static int getNextDirection(LatLng currentPoint) {
 		if (points.size() == 0) {
 			prevPt = currentPoint;
-			return DIRECTION.DONE;
+			return DONE;
 		}
 		LatLng nextPt = points.get(0);
 		double currDist = distance(currentPoint, nextPt);
 		if (prevDist != null && prevDist < currDist + distance(prevPt, currentPoint) - ACC) {
 			prevDist = currDist;
 			prevPt = currentPoint;
-			return DIRECTION.WRONG_WAY;
+			return WRONG_WAY;
 		}
 		prevPt = currentPoint;
 		Log.d("currDist: ", String.format("%f", currDist));
@@ -140,17 +146,17 @@ public class MarkerPositionList {
 			}
 			double angle = getAngle(currentPoint, nextPt, points.get(0));
 			if (Math.abs(angle) < Math.PI / 8) { // 22.5 degrees
-				return DIRECTION.STRAIGHT;
+				return STRAIGHT;
 			} else {
 				if (angle < 0) {
-					return DIRECTION.RIGHT;
+					return RIGHT;
 				} else {
-					return DIRECTION.LEFT;
+					return LEFT;
 				}
 			}
 		} else {
 			prevDist = currDist;
-			return DIRECTION.STRAIGHT;
+			return STRAIGHT;
 		}
 	}
 	
