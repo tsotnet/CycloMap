@@ -6,5 +6,6 @@
     <string name="main_move_marker">Move</string>
     <string name="main_remove_marker">Remove</string>
     <string name="location_services_unavailable">Location services is unavailable, try again later</string>
+    <string name="progress_dialog_text">Please Wait...</string>
     
 </resources>
