@@ -3,6 +3,7 @@
 
     <string name="app_name">CycloMap</string>
     <string name="action_settings">Settings</string>
-    <string name="hello_world">Hello world!</string>
-
+    <string name="main_move_marker">Move</string>
+    <string name="main_remove_marker">Remove</string>
+    
 </resources>

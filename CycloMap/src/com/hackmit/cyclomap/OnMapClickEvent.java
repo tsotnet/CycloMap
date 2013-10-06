@@ -18,6 +18,6 @@ public class OnMapClickEvent implements OnMapClickListener {
 	@Override
 	public void onMapClick(LatLng point) {
 		Log.d("Tag: ", "click on " + point.toString());
-        mMap.addMarker(new MarkerOptions().position(point));
+        
 	}
 }
