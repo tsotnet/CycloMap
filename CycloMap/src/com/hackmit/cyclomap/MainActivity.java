@@ -127,7 +127,7 @@ public class MainActivity extends Activity implements
                 	@Override
                 	public void handleMessage(Message msg) {
                 		super.handleMessage(msg);
-                		if (msg != null) {
+                		if (msg.obj != null) {
                 		    LatLng point = (LatLng)msg.obj;
                             Log.d("create marker", "success");
                             createMarker(point, "Red");

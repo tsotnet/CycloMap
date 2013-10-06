@@ -25,7 +25,9 @@ public class Polyline {
 		if (markersCount() == 0) {
 			points.add(point);
 			markerIndices.add(0);
-			isDone.sendEmptyMessage(0);
+			Message msg = new Message();
+			msg.obj = point;
+			isDone.sendMessage(msg);
 		} else {
 			Handler listHandler = new Handler() {
 				@Override
@@ -35,7 +37,7 @@ public class Polyline {
 					List<LatLng> dir = (List<LatLng>)msg.obj;
 					Log.d("dir: ", dir.toString());
 					if (dir.isEmpty()) {
-						isDone.sendMessage(null /* bad */);
+			            isDone.sendEmptyMessage(0);
 						return ;
 					}
 					points.addAll(dir.subList(1, dir.size()));
