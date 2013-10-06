@@ -104,6 +104,10 @@ public class MainActivity extends Activity implements
         mMap.getUiSettings().setZoomControlsEnabled(false);
         mMap.setOnMapClickListener(new MyMapClickListener());
         mMap.setOnMarkerClickListener(new MyMarkerClickListener());
+        
+        for (LatLng point : Polyline.getMarkers()) {
+            createMarker(point, "Red");
+        }
     }
     
     @Override

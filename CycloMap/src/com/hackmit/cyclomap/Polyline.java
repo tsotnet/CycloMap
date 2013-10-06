@@ -20,6 +20,14 @@ public class Polyline {
 		return markerIndices.size();
 	}
 	
+	public static List<LatLng> getMarkers() {
+	    List<LatLng> result = new ArrayList<LatLng>();
+	    for(int i : markerIndices) {
+	        result.add(points.get(i));
+	    }
+	    return result;
+	}
+	
 	public static void addMarker(final LatLng point, final Handler isDone) {
 		Log.d("polyline", "adding point: " + point);
 		if (markersCount() == 0) {
