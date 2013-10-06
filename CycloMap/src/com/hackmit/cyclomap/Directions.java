@@ -117,7 +117,7 @@ public class Directions {
 		return "http://maps.googleapis.com/maps/api/directions/json?origin=" +
 				origin.latitude + "," + origin.longitude + "&" +
 				"destination=" +
-				destination.latitude + "," + origin.longitude +
+				destination.latitude + "," + destination.longitude +
 				"&sensor=true&mode=bicycle";
 	}
 	

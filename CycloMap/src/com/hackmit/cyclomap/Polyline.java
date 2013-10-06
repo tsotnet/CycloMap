@@ -51,6 +51,8 @@ public class Polyline {
 					
 					Message message = new Message();
 					message.obj = points.get(points.size() - 1);
+					Log.d("new point:", point.toString());
+					Log.d("last pt: ", points.get(points.size() - 1).toString());
 					isDone.sendMessage(message /* good */);
 				}
 			};
