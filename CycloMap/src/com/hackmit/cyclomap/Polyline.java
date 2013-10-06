@@ -35,7 +35,7 @@ public class Polyline {
 					List<LatLng> dir = (List<LatLng>)msg.obj;
 					Log.d("dir: ", dir.toString());
 					if (dir.isEmpty()) {
-						isDone.sendEmptyMessage(1 /* bad */ );
+						isDone.sendMessage(null /* bad */);
 						return ;
 					}
 					points.addAll(dir.subList(1, dir.size()));
@@ -47,7 +47,9 @@ public class Polyline {
 					Log.d("polyline", "markerIndices: " + markerIndices);
 					Log.d("polyline", "points: " + points);
 					
-					isDone.sendEmptyMessage(0 /* good */);
+					Message message = new Message();
+					message.obj = points.get(points.size() - 1);
+					isDone.sendMessage(message /* good */);
 				}
 			};
 			Directions.getDirections(getLastMarker(), point, listHandler);
