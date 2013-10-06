@@ -3,7 +3,8 @@ CycloMap
 
 CycloMap is a navigation tool for professional and recreational cyclists. My teammate and I both have bikes and wanted to make our lives easier.
 
-A huge problem for cyclists is getting directions for several reasons -
+For several reasons getting directions is a huge problem for cyclists -
+
 1. It is not a good idea to ride a bike with headphones
 2. Holding in your hand or attaching to handlebar may either break the phone or some part of the rider.
 
