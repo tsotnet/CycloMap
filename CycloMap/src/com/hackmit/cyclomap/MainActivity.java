@@ -2,6 +2,7 @@ package com.hackmit.cyclomap;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -88,11 +89,11 @@ public class MainActivity extends Activity {
                 // Adding marker in map
                 createMarker(point, "Red");
                 Polyline.addMarker(point);
+                Log.d("TAG", "CREATE MARKER");
             }
             mSelectedMarker = null;
         }
     }
-    
     
     /**
      * This class catches onclick events for marker. It is responsible
@@ -102,11 +103,11 @@ public class MainActivity extends Activity {
         @Override
         public boolean onMarkerClick(final Marker marker) {
             final Marker new_marker;
-            if (marker != mSelectedMarker) {
+            if (mSelectedMarker == null || !marker.getPosition().equals(mSelectedMarker.getPosition())) {
                 reCreateMarker(mSelectedMarker, "Red");
                 new_marker = reCreateMarker(marker, "Blue");
             } else {
-                new_marker = marker;
+                return true;
             }
             mLowerLayout.setVisibility(View.VISIBLE);
             mRemoveButton.setOnClickListener(new OnClickListener() {
@@ -115,6 +116,7 @@ public class MainActivity extends Activity {
                 public void onClick(View v) {
                     Polyline.removeMarker(new_marker.getPosition());
                     new_marker.remove();
+                    Log.d("TAG", "REMOVE MARKER");
                     mSelectedMarker = null;
                     mLowerLayout.setVisibility(View.INVISIBLE);
                 }
