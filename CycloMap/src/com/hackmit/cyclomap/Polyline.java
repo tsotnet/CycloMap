@@ -127,6 +127,7 @@ public class Polyline {
 				}
 				markerIndices.remove(index);
 				points = newPoints;
+				isRemovedSuccessfully.sendEmptyMessage(0 /* good */);
 			};
 		};
 		
