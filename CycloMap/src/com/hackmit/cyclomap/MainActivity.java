@@ -3,7 +3,10 @@ package com.hackmit.cyclomap;
 import android.app.Activity;
 import android.content.IntentSender;
 import android.location.Location;
+import android.location.LocationListener;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -15,6 +18,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
@@ -27,7 +31,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MainActivity extends Activity implements
                             GooglePlayServicesClient.ConnectionCallbacks,
-                            GooglePlayServicesClient.OnConnectionFailedListener {
+                            GooglePlayServicesClient.OnConnectionFailedListener,
+                            com.google.android.gms.location.LocationListener {
 
     private GoogleMap mMap;
     private MapFragment mMapFragment;
@@ -36,7 +41,11 @@ public class MainActivity extends Activity implements
     private Button mRemoveButton;
     private Marker mSelectedMarker = null;
     private LocationClient mLocationClient;
-    
+    private LocationRequest mLocationRequest;
+    // Navigation data update frequency
+    public static final int UPDATE_INTERVAL_IN_MILLISECONDS = 5;
+    // Fastest navigation data update frequency that our app can handle
+    public static final int FASTEST_INTERVAL_IN_MILLISECONDS = 1;
     /**
      * @param point Marker coordinates
      * @param color Color of the marker (either "Red" or "Blue" otherwise throws IllegalArgumentException)
@@ -86,6 +95,12 @@ public class MainActivity extends Activity implements
         }
         mLocationClient = new LocationClient(this, this, this);
         mLocationClient.connect();
+        mLocationRequest = LocationRequest.create();
+        // Use high accuracy
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        mLocationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
+        mLocationRequest.setFastestInterval(FASTEST_INTERVAL_IN_MILLISECONDS);
+        
         mMap.getUiSettings().setZoomControlsEnabled(false);
         mMap.setOnMapClickListener(new MyMapClickListener());
         mMap.setOnMarkerClickListener(new MyMarkerClickListener());
@@ -94,6 +109,7 @@ public class MainActivity extends Activity implements
     @Override
     protected void onDestroy() {
         mLocationClient.disconnect();
+        super.onDestroy();
     }    
     /**
      * This class catches onclick event on the map and creates new marker
@@ -150,6 +166,7 @@ public class MainActivity extends Activity implements
     public void onConnected(Bundle connectionHint) {
         Location location = mLocationClient.getLastLocation();
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(),location.getLongitude()),17.0f));
+        mLocationClient.requestLocationUpdates(mLocationRequest, this);
     }
     
     @Override
@@ -170,8 +187,13 @@ public class MainActivity extends Activity implements
     
     @Override
     public void onDisconnected() {
-        // TODO Auto-generated method stub
-        
+        // Hayk jan, what should I do here? :D
+        // I hate that I have to implement interface's every method :@
+    }
+    
+    @Override
+    public void onLocationChanged(Location location) {
+        Log.d("TAG", ""+location.getLatitude()+" "+location.getLongitude()+" "+location.getSpeed());
     }
     
 }
