@@ -2,6 +2,8 @@ package com.hackmit.cyclomap;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -81,15 +83,24 @@ public class MainActivity extends Activity {
      */
     private class MyMapClickListener implements OnMapClickListener {
         @Override
-        public void onMapClick(LatLng point) {
+        public void onMapClick(final LatLng point) {
             if (mSelectedMarker != null) {
                 reCreateMarker(mSelectedMarker, "Red");
                 mLowerLayout.setVisibility(View.INVISIBLE);
             } else {
                 // Adding marker in map
-                createMarker(point, "Red");
-                Polyline.addMarker(point);
-                Log.d("TAG", "CREATE MARKER");
+                Handler isMarkerAdded = new Handler() {
+                	@Override
+                	public void handleMessage(Message msg) {
+                		super.handleMessage(msg);
+                		if (msg.what != 0) {
+                			return ; // no path found.
+                		}
+            			Log.d("create marker", "success");
+            			createMarker(point, "Red");
+                	};
+                };
+                Polyline.addMarker(point, isMarkerAdded);
             }
             mSelectedMarker = null;
         }
@@ -114,13 +125,21 @@ public class MainActivity extends Activity {
                 @Override
                 // Event for removing marker from map
                 public void onClick(View v) {
-                	if (!Polyline.removeMarker(new_marker.getPosition())) {
-                		return ;
-                	}
-                    new_marker.remove();
-                    Log.d("TAG", "REMOVE MARKER");
-                    mSelectedMarker = null;
-                    mLowerLayout.setVisibility(View.INVISIBLE);
+                	Handler markerRemoved = new Handler() {
+                		@Override
+                		public void handleMessage(Message msg) {
+                			super.handleMessage(msg);
+                			if (msg.what == 1) { // unsuccessful delete
+                				Log.d("remove marker", "UNsuccessfull remove");
+                				return ;
+                			}
+                            new_marker.remove();
+                            Log.d("remove marker", "success");
+                            mSelectedMarker = null;
+                            mLowerLayout.setVisibility(View.INVISIBLE);	
+                		}
+                	};
+                	Polyline.removeMarker(new_marker.getPosition(), markerRemoved);
                 }
             });
             mSelectedMarker = new_marker;
