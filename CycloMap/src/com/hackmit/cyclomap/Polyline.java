@@ -25,20 +25,15 @@ public class Polyline {
 			points.addAll(dir.subList(1, dir.size()));
 			markerIndices.add(points.size() - 1);
 		}
-		System.out.println(points.toString());
-		System.out.println(markerIndices.toString());
 	}
 	
 	public static boolean removeMarker(LatLng point) {
 		for (int i = 0; i < markerIndices.size(); ++i) {
 			if (pointsEqual(point, points.get(markerIndices.get(i)))) {
 				removeMarker(i);
-				System.out.println(points.toString());
-				System.out.println(markerIndices.toString());
 				return true;
 			}
 		}
-		System.out.println("point not found");
 		return false;
 	}
 	
@@ -68,7 +63,6 @@ public class Polyline {
 
 		int a = markerIndices.get(index - 1);
 		int b = markerIndices.get(index + 1);
-		System.out.println(String.format("index: %d, a: %d, b: %d", index, a, b));
 		int removed = b - a + 1;
 		
 		List<LatLng> newPoints = new ArrayList<LatLng>();

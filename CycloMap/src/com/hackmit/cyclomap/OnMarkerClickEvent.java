@@ -7,8 +7,10 @@ public class OnMarkerClickEvent implements OnMarkerClickListener {
     @Override
     public boolean onMarkerClick(Marker marker) {
     	// TODO: ask for confirmation to delete.
-    	Polyline.removeMarker(marker.getPosition());
-        marker.remove();
-        return true;
+    	if (Polyline.removeMarker(marker.getPosition())) {
+    		marker.remove();
+    		return true;
+    	}
+    	return false;
     }
 }
