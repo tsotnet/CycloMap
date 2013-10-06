@@ -150,6 +150,7 @@ public class MainActivity extends Activity implements
         		} else {
         			Log.d("dir", MarkerPositionList.getNextDirection(
         					TestClass.currpts[TestClass.currInd++]).toString());
+        			Log.d("markers: ", MarkerPositionList.getMarkers().toString());
         			Log.d("DONE", "DONE");
         			return;
         		}

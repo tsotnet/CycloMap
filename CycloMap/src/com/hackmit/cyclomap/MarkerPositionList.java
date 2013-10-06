@@ -103,21 +103,26 @@ public class MarkerPositionList {
 		LEFT, RIGHT, STRAIGHT, WRONG_WAY, DONE
 	};
 	
-	private static final double THRESHOLD = 200.0;
+	private static final double THRESHOLD = 20.0;
+	private static final double ACC = 3.0;
 	private static Double prevDist = null;
+	private static LatLng prevPt = null;
 	public static DIRECTION getNextDirection(LatLng currentPoint) {
 		if (points.size() == 0) {
+			prevPt = currentPoint;
 			return DIRECTION.DONE;
 		}
 		LatLng nextPt = points.get(0);
 		double currDist = distance(currentPoint, nextPt);
-		if (prevDist != null && prevDist < currDist) {
+		if (prevDist != null && prevDist < currDist + distance(prevPt, currentPoint) - ACC) {
 			prevDist = currDist;
+			prevPt = currentPoint;
 			return DIRECTION.WRONG_WAY;
 		}
+		prevPt = currentPoint;
 		Log.d("currDist: ", String.format("%f", currDist));
 		Log.d("prevDist: ", String.format("%f", prevDist));
-		if (currDist < THRESHOLD) {
+		if (currDist < THRESHOLD && prevDist != null) {
 			points.remove(0);
 			prevDist = null;
 			if (markerIndices.get(0) == 0) {
@@ -126,7 +131,7 @@ public class MarkerPositionList {
 					points.clear();
 				} else {
 					int remove = markerIndices.get(1);
-					points = points.subList(remove, points.size());
+					points = points.subList(remove - 1, points.size());
 					markerIndices.remove(0);
 					for (int i = 0; i < markerIndices.size(); ++i) {
 						markerIndices.set(i, markerIndices.get(i) - remove);
@@ -159,6 +164,8 @@ public class MarkerPositionList {
 										next2.latitude - nextPt.latitude,
 										next2.longitude - nextPt.longitude);
 		
+		Log.d("currentPt: ", currentPoint.toString());
+		Log.d("nextPt: ", nextPt.toString());
 		Log.d("angle: ", Double.valueOf(nextToNext2 - currToNext).toString());
 //		Log.d("nextToNext2, currToNext", String.format("%f, %f", nextToNext2, currToNext));
 		return nextToNext2 - currToNext;
