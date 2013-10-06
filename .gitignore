@@ -21,3 +21,6 @@ local.properties
 
 # Eclipse project properties
 project.properties
+
+# Mac OSX shit
+.DS_Store

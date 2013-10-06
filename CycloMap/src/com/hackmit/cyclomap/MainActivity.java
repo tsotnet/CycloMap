@@ -113,7 +113,9 @@ public class MainActivity extends Activity {
                 @Override
                 // Event for removing marker from map
                 public void onClick(View v) {
-                    Polyline.removeMarker(new_marker.getPosition());
+                	if (!Polyline.removeMarker(new_marker.getPosition())) {
+                		return ;
+                	}
                     new_marker.remove();
                     mSelectedMarker = null;
                     mLowerLayout.setVisibility(View.INVISIBLE);

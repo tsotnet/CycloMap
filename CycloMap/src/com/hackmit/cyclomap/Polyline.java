@@ -3,6 +3,8 @@ package com.hackmit.cyclomap;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.util.Log;
+
 import com.google.android.gms.maps.model.LatLng;
 
 public class Polyline {
@@ -17,23 +19,35 @@ public class Polyline {
 	}
 	
 	public static void addMarker(LatLng point) {
+		Log.d("polyline", "adding point: " + point);
 		if (markersCount() == 0) {
 			points.add(point);
 			markerIndices.add(0);
 		} else {
 			List<LatLng> dir = Directions.getDirections(getLastMarker(), point);
+			if (dir.isEmpty()) {
+				return;
+			}
 			points.addAll(dir.subList(1, dir.size()));
 			markerIndices.add(points.size() - 1);
 		}
+		Log.d("polyline", "markerIndices: " + markerIndices);
+		Log.d("polyline", "points: " + points);
 	}
 	
 	public static boolean removeMarker(LatLng point) {
+		Log.d("polyline", "removing: " + point);
 		for (int i = 0; i < markerIndices.size(); ++i) {
 			if (pointsEqual(point, points.get(markerIndices.get(i)))) {
 				removeMarker(i);
+				
+				Log.d("polyline", "markerIndices: " + markerIndices);
+				Log.d("polyline", "points: " + points);
 				return true;
 			}
 		}
+		
+		Log.d("polyline", "point not found");
 		return false;
 	}
 	
