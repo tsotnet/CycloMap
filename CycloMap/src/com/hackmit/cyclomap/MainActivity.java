@@ -117,7 +117,7 @@ public class MainActivity extends Activity implements
      */
     private class MyMapClickListener implements OnMapClickListener {
         @Override
-        public void onMapClick(final LatLng point) {
+        public void onMapClick(LatLng point) {
             if (mSelectedMarker != null) {
                 reCreateMarker(mSelectedMarker, "Red");
                 mLowerLayout.setVisibility(View.INVISIBLE);
@@ -127,11 +127,11 @@ public class MainActivity extends Activity implements
                 	@Override
                 	public void handleMessage(Message msg) {
                 		super.handleMessage(msg);
-                		if (msg.what != 0) {
-                			return ; // no path found.
+                		if (msg != null) {
+                		    LatLng point = (LatLng)msg.obj;
+                            Log.d("create marker", "success");
+                            createMarker(point, "Red");
                 		}
-            			Log.d("create marker", "success");
-            			createMarker(point, "Red");
                 	};
                 };
                 Polyline.addMarker(point, isMarkerAdded);
