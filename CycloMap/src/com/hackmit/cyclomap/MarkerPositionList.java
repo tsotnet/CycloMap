@@ -33,6 +33,11 @@ public class MarkerPositionList {
 	    return result;
 	}
 	
+	// Synchronized because navigation needs to access it from background thread
+	public synchronized static List<LatLng> getPoints() {
+	    return new ArrayList<LatLng>(points);
+	}
+	
 	public static void addMarker(final LatLng point, final Handler isDone) {
 		Log.d("polyline", "adding point: " + point);
 		Log.d("marker count: ", markerIndices.toString());
