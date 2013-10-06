@@ -133,6 +133,34 @@ public class MainActivity extends Activity implements
     private class MyMapClickListener implements OnMapClickListener {
         @Override
         public void onMapClick(LatLng point) {
+        	
+        	if (TestClass.TEST_MODE) {
+//        		Log.d("(10, 10), (20, 20), (30, 30)", Double.valueOf(MarkerPositionList.getAngle(
+//        				new LatLng(10, 10),
+//        				new LatLng(20, 20),
+//        				new LatLng(30, 30))).toString());
+//        		
+//        		Log.d("(10, 10), (10, 30), (30, 30)", Double.valueOf(MarkerPositionList.getAngle(
+//        				new LatLng(10, 10),
+//        				new LatLng(10, 30),
+//        				new LatLng(30, 30))).toString());
+//        		
+//        		Log.d("(10, 10), (30, 10), (30, 30)", Double.valueOf(MarkerPositionList.getAngle(
+//        				new LatLng(10, 10),
+//        				new LatLng(30, 10),
+//        				new LatLng(30, 30))).toString());
+        		
+        		if (TestClass.index < TestClass.points.length) {
+        			point = TestClass.points[TestClass.index++];
+        		} else {
+        			Log.d("dir", MarkerPositionList.getNextDirection(
+        					TestClass.currpts[TestClass.currInd++]).toString());
+        			Log.d("markers: ", MarkerPositionList.getMarkers().toString());
+        			Log.d("DONE", "DONE");
+        			return;
+        		}
+        	}
+        	
             if (mSelectedMarker != null) {
                 reCreateMarker(mSelectedMarker, "Red");
                 mLowerLayout.setVisibility(View.INVISIBLE);
